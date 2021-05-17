@@ -24,6 +24,7 @@ import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLContexts;
 import org.apache.http.conn.ssl.StrictHostnameVerifier;
 import org.apache.http.conn.ssl.X509HostnameVerifier;
+import org.apache.http.impl.NoConnectionReuseStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 
@@ -279,6 +280,7 @@ public class HttpClientBuilder {
             }
 
             RequestConfig requestConfig = RequestConfig.custom()
+                    .setExpectContinueEnabled(true)
                     .setConnectTimeout((int) establishConnectionTimeout)
                     .setSocketTimeout((int) socketTimeout).build();
 
@@ -298,6 +300,8 @@ public class HttpClientBuilder {
                 // Will start background cleaner thread
                 builder.evictIdleConnections(maxConnectionIdleTime, maxConnectionIdleTimeUnit);
             }
+
+            builder.setConnectionReuseStrategy(new NoConnectionReuseStrategy());
 
             if (disableCookies) builder.disableCookieManagement();
             return builder.build();
